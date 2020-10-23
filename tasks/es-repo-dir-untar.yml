@@ -1,0 +1,23 @@
+---
+
+- name: "Delete ES repository path (if already exists)"
+  file:
+    path: "{{ maint_es_repo_path }}"
+    state: "absent"
+
+- name: "create directory to hold ES repository"
+  file:
+    path: "{{ maint_es_repo_path }}"
+    state: "directory"
+    mode: "0755"
+    owner: "elasticsearch"
+    group: "elasticsearch"
+
+- name: "Untar backed-up repository to repository path"
+  unarchive:
+    src: "{{ maint_backup_basepath }}/current/es/es-repo.tgz"
+    dest: "{{ maint_es_repo_path }}"
+    remote_src: yes
+    mode: "0755"
+    owner: "elasticsearch"
+    group: "elasticsearch"

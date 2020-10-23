@@ -1,0 +1,15 @@
+---
+# tasks file for ansible-maint-restore-es
+
+- name: "Restore ES repository from tarball"
+  import_tasks: "es-repo-dir-untar.yml"
+  tags: restore-es
+
+- name: "Config ES repository"
+  import_tasks: "es-config-repo.yml"
+  tags: restore-es
+
+- name: "Restore ES indices from snapshots"
+  import_tasks: "es-restore-snapshot.yml"
+  tags: restore-es
+

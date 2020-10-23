@@ -1,0 +1,22 @@
+---
+
+- name: "Get list of indices from snapshot"
+  uri:
+    url: "http://{{ maint_es_server_ip }}:{{ maint_es_server_port }}/_snapshot/{{ maint_es_repo_name }}/{{ maint_es_snapshot_name }}"
+  register: "es_response"
+
+
+- name: "Close indices to be restored from ES server (if existing)"
+  uri:
+    url: "http://{{ maint_es_server_ip }}:{{ maint_es_server_port }}/{{ item }}/_close"
+    method: "POST"
+    status_code:  # API returns 404 in case of index not found 
+      - 200
+      - 404
+  loop: "{{ es_response.json.snapshots[0].indices }}"
+
+- name: "Restore snapshot of all indices"
+  uri:
+    url: "http://{{ maint_es_server_ip }}:{{ maint_es_server_port }}/_snapshot/{{ maint_es_repo_name }}/{{ maint_es_snapshot_name }}/_restore?wait_for_completion=true"
+    method: "POST"
+    timeout: 600
