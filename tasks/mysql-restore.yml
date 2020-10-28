@@ -1,0 +1,30 @@
+---
+
+- name: "Find the database tarballs files in the backup dir"
+  find:
+    paths: "{{ maint_backup_basepath }}/current/mysql"
+    patterns: "*.sql.gz"
+  register: find_dbs
+
+- name: "Get a list of database tarballs files"
+  set_fact:
+    db_list: "{{ find_dbs.files | map(attribute='path') | list | map('basename') | list | map('regex_replace', '^(.*)\\.sql\\.gz', '\\1') | list }}"
+
+- name: "Drop databases to restore (if existing)"
+  mysql_db:
+    name: "{{ db_list }}"
+    state: absent
+
+- name: "Create databases"
+  mysql_db:
+    name: "{{ db_list }}"
+    state: present
+    encoding: "{{ maint_mysql_encoding }}"
+    collation: "{{ maint_mysql_collation }}"
+
+- name: "Restore database from dumps"
+  mysql_db:
+    name: "{{ item }}"
+    state: "import"
+    target: "{{ maint_backup_basepath }}/current/mysql/{{ item }}.sql.gz"
+  loop: "{{ db_list }}"

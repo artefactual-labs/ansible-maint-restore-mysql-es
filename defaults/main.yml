@@ -5,10 +5,16 @@
 maint_backup_basepath: "/var/artefactual/maint-backups"
 
 #############################################
+# mysql related parameters
+
+# collation and encoding to use when db is re-created
+maint_mysql_collation: "utf8_unicode_ci"
+maint_mysql_encoding: "utf8"
+
+#############################################
 # Elasticsearch snapshot related parameters
 
-# ES server IP
-# Note: currently this only works if same as target host!!
+# ES server IP (Note: currently this only works if same as target host!!)
 maint_es_server_ip: "127.0.0.1"
 # ES server port
 maint_es_server_port: "9200"
